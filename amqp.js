@@ -132,6 +132,7 @@ function AMQPParser (version, type) {
       if (!methodTable[classInfo.index]) methodTable[classInfo.index] = {};
       methodTable[classInfo.index][methodInfo.index] = method;
       methods[name] = method;
+      console.log(name);
     }
   }
 })(); // end anon scope
@@ -1558,7 +1559,7 @@ Queue.prototype.bind = function (/* [exchange,] routingKey */) {
     this.exchange = self.connection.exchanges[exchangeName];
     this.exchange.binds++;
   }
-
+  
   self.connection._sendMethod(self.channel, methods.queueBind,
       { reserved1: 0
       , queue: self.name
@@ -1813,8 +1814,9 @@ Exchange.prototype._onMethod = function (channel, method, args) {
       break;
 
     default:
-      throw new Error("Uncaught method '" + method.name + "' with args " +
-          JSON.stringify(args));
+      console.log("Uncaught method '" + method.name + "' with args " + JSON.stringify(args));
+      //throw new Error("Uncaught method '" + method.name + "' with args " +
+          //JSON.stringify(args));
   }
 
   this._tasksFlush();
@@ -1861,6 +1863,46 @@ Exchange.prototype.publish = function (routingKey, data, options) {
     self.connection._sendBody(self.channel, data, options);
   });
 };
+
+
+
+Exchange.prototype.bind = function (/* [exchange,] routingKey */) {
+  var self = this;
+
+  // The first argument, exchange is optional.
+  // If not supplied the connection will use the 'amq.topic'
+  // exchange.
+
+  var exchange, routingKey;
+
+  if (arguments.length == 2) {
+    exchange = arguments[0];
+    routingKey = arguments[1];
+  } else {
+    exchange = 'amq.topic';
+    routingKey = arguments[0];
+  }
+
+
+  var exchangeName = exchange instanceof Exchange ? exchange.name : exchange;
+
+  if(exchangeName in self.connection.exchanges) {
+    this.exchange = self.connection.exchanges[exchangeName];
+    this.exchange.binds++;
+  }
+  
+  self.connection._sendMethod(self.channel, methods.exchangeBind,
+      { reserved1: 0
+      , destination: self.name
+      , source: exchangeName
+      , routingKey: routingKey
+      , noWait: false
+      , "arguments": {}
+      });
+
+};
+
+
 
 // do any necessary cleanups eg. after queue destruction  
 Exchange.prototype.cleanup = function() {

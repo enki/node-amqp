@@ -11,6 +11,12 @@ require 'json'
 
 class InputError < StandardError; end
 
+def wikify(phrase)
+  phrase.gsub!(/^[a-z]|\s+[a-z]/) { |a| a.upcase }
+  phrase.gsub!(/\s/, '')
+  return phrase
+end
+
 def spec_details(doc)
   # AMQP spec details
 
@@ -27,7 +33,7 @@ def spec_details(doc)
 end
 
 def jscase(s)
-  t = s.gsub(/\s|-/, '_').camelcase
+  t = wikify(s.gsub(/\s|-/, ' '))
   t[0] = t[0].downcase
   t
 end

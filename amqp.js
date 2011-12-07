@@ -132,7 +132,7 @@ function AMQPParser (version, type) {
       if (!methodTable[classInfo.index]) methodTable[classInfo.index] = {};
       methodTable[classInfo.index][methodInfo.index] = method;
       methods[name] = method;
-      console.log(name);
+      // console.log(name);
     }
   }
 })(); // end anon scope
@@ -1694,7 +1694,7 @@ Queue.prototype._onMethod = function (channel, method, args) {
 
     case methods.queueBindOk:
       break;
-
+    
     case methods.basicQosOk:
       break;
 
@@ -1811,6 +1811,9 @@ Exchange.prototype._onMethod = function (channel, method, args) {
 
     case methods.basicReturn:
       this.emit('basic-return', args);
+      break;
+
+    case methods.exchangeBindOk:
       break;
 
     default:

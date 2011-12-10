@@ -1012,7 +1012,7 @@ Connection.prototype.heartbeat = function() {
 };
 
 Connection.prototype._sendMethod = function (channel, method, args) {
-  debug(channel + " < " + method.name + " " + JSON.stringify(args));
+  // debug(channel + " < " + method.name + " " + JSON.stringify(args));
   var b = new Buffer(maxFrameBuffer);
   b.used = 0;
 
